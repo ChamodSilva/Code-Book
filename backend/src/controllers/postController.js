@@ -10,19 +10,21 @@ exports.getAllPosts = async (req, res) =>
         const [rows] = await connection.execute
         (`
             SELECT
-                p.postID,
+                p.id AS postID,
                 p.title,
-                p.content,
-                p.Image,
-                p.dateCreated,
-                u.userID,
-                u.firstName AS authorFirstName,
-                u.lastName AS authorLastName
+                p.code_snippet,
+                p.language,
+                p.description,
+                p.github_repo_url,
+                p.created_at,
+                u.id AS userID,
+                u.username,
+                u.email
             FROM
-                Post p
+                posts p
             JOIN
-                Users u ON p.userID = u.userID
-            ORDER BY p.dateCreated DESC
+                users u ON p.user_id = u.id
+            ORDER BY p.created_at DESC
         `);
         res.json(rows);
     }
@@ -133,31 +135,31 @@ exports.createPost = async (req, res) =>
     let connection;
     try
     {
-        const { title, content, Image, userID } = req.body;
+        const { user_id, title, code_snippet, language, description, github_repo_url } = req.body;
 
-        if (!title || !content || !userID)
+        if (!user_id || !title || !code_snippet)
         {
-            return res.status(400).json({ message: 'Title, content, and userID are required.' });
+            return res.status(400).json({ message: 'user_id, title, and code_snippet are required.' });
         }
 
         connection = await pool.getConnection();
-        const [userCheck] = await connection.execute('SELECT userID FROM Users WHERE userID = ?', [userID]);
+        const [userCheck] = await connection.execute('SELECT id FROM users WHERE id = ?', [user_id]);
         if (userCheck.length === 0)
         {
-            return res.status(404).json({ message: 'Author (userID) not found.' });
+            return res.status(404).json({ message: 'Author (user_id) not found.' });
         }
 
         const [result] = await connection.execute
         (
-            'INSERT INTO Post (title, content, Image, userID) VALUES (?, ?, ?, ?)',
-            [title, content, Image, userID]
+            'INSERT INTO posts (user_id, title, code_snippet, language, description, github_repo_url) VALUES (?, ?, ?, ?, ?, ?)',
+            [user_id, title, code_snippet, language, description, github_repo_url]
         );
 
         res.status(201).json
         ({
             message: 'Post created successfully',
             postID: result.insertId,
-            post: { title, content, Image, userID }
+            post: { user_id, title, code_snippet, language, description, github_repo_url }
         });
 
     }
@@ -166,7 +168,7 @@ exports.createPost = async (req, res) =>
         console.error('Error creating post:', err);
         if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.code === 'ER_NO_REFERENCED_ROW')
         {
-            return res.status(400).json({ message: 'Invalid userID provided. User does not exist.', error: err.message });
+            return res.status(400).json({ message: 'Invalid user_id provided. User does not exist.', error: err.message });
         }
         res.status(500).json({ message: 'Error creating post', error: err.message });
     }
