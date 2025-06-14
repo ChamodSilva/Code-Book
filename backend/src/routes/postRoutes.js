@@ -5,11 +5,43 @@ const router = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     Post:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         user_id:
+ *           type: integer
+ *         title:
+ *           type: string
+ *         code_snippet:
+ *           type: string
+ *         language:
+ *           type: string
+ *           nullable: true
+ *         description:
+ *           type: string
+ *           nullable: true
+ *         github_repo_url:
+ *           type: string
+ *           nullable: true
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ */
+
+/**
+ * @swagger
  * /api/posts:
  *   get:
  *     summary: Retrieve a list of all posts
  *     tags: [Posts]
- *     description: Returns a list of all posts and all relevant files.
+ *     description: Returns a list of all posts.
  *     responses:
  *       200:
  *         description: A list of posts.
@@ -18,16 +50,7 @@ const router = express.Router();
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   postID: { type: integer }
- *                   title: { type: string }
- *                   content: { type: string }
- *                   Image: { type: string, nullable: true }
- *                   dateCreated: { type: string, format: date-time }
- *                   userID: { type: integer }
- *                   authorFirstName: { type: string }
- *                   authorLastName: { type: string }
+ *                 $ref: '#/components/schemas/Post'
  *       500:
  *         description: Internal server error
  */
@@ -49,29 +72,11 @@ router.get('/', postController.getAllPosts);
  *         description: ID of the post to retrieve.
  *     responses:
  *       200:
- *         description: A single post object with nested comments and reactions.
+ *         description: A single post object.
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 postID: { type: integer, example: 1 }
- *                 title: { type: string, example: 'Example Post' }
- *                 content: { type: string, example: 'This is example content' }
- *                 Image: { type: string, nullable: true, example: 'http://example.com/example.jpg' }
- *                 dateCreated: { type: string, format: date-time, example: '2025-06-06T10:00:00Z' }
- *                 authorID: { type: integer, example: 1 }
- *                 authorFirstName: { type: string, example: 'Exa' }
- *                 authorLastName: { type: string, example: 'Mple' }
- *                 authorEmail: { type: string, example: 'Exa.Mple@example.com' }
- *                 comments:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Comment'
- *                 reactions:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/React'
+ *               $ref: '#/components/schemas/Post'
  *       404:
  *         description: Post not found.
  *       500:
@@ -85,20 +90,36 @@ router.get('/:id', postController.getPostById);
  *   post:
  *     summary: Create a new post
  *     tags: [Posts]
- *     description: Creates a new post with the provided title, content, optional image, and author ID.
+ *     description: Creates a new post with the provided title, code snippet, and author ID.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Post'
+ *             type: object
+ *             required: [user_id, title, code_snippet]
+ *             properties:
+ *               user_id:
+ *                 type: integer
+ *               title:
+ *                 type: string
+ *               code_snippet:
+ *                 type: string
+ *               language:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               github_repo_url:
+ *                 type: string
  *           examples:
  *             newPost:
  *               value:
+ *                 user_id: 1
  *                 title: "Swagger Docs Api Post"
- *                 content: "This was generated via the projects swagger documentation."
- *                 Image: "http://example.com/example.jpg"
- *                 userID: 1
+ *                 code_snippet: "console.log('Hello, world!');"
+ *                 language: "JavaScript"
+ *                 description: "This was generated via the project's swagger documentation."
+ *                 github_repo_url: "http://github.com/example/repo"
  *     responses:
  *       201:
  *         description: Post created successfully.
@@ -114,7 +135,7 @@ router.get('/:id', postController.getPostById);
  *       400:
  *         description: Bad request (e.g., missing required fields).
  *       404:
- *         description: Author (userID) not found.
+ *         description: Author (user_id) not found.
  *       500:
  *         description: Internal server error.
  */

@@ -5,6 +5,39 @@ const router = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         password_hash:
+ *           type: string
+ *           description: Hashed password
+ *         profile_picture_url:
+ *           type: string
+ *           nullable: true
+ *         bio:
+ *           type: string
+ *           nullable: true
+ *         github_username:
+ *           type: string
+ *           nullable: true
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ */
+
+/**
+ * @swagger
  * /api/users:
  *   get:
  *     summary: Retrieve a list of all users
@@ -36,13 +69,20 @@ router.get('/', userController.getAllUsers);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             type: object
+ *             required: [username, email, password]
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
  *           examples:
  *             newUser:
  *               value:
- *                 firstName: Exa
- *                 lastName: Mple
- *                 email: Exa.Mple@example.com
+ *                 username: exauser
+ *                 email: exa.user@example.com
  *                 password: mySecretPassword123
  *     responses:
  *       201:
@@ -63,7 +103,7 @@ router.get('/', userController.getAllUsers);
  *       400:
  *         description: Bad request (e.g., missing required fields).
  *       409:
- *         description: Conflict (e.g., email already exists).
+ *         description: Conflict (e.g., username or email already exists).
  *       500:
  *         description: Internal server error.
  */
