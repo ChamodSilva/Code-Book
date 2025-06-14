@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: codebook_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: codebook12345
+      MYSQL_DATABASE: codebook_db
+      MYSQL_USER: codebook_user
+      MYSQL_PASSWORD: password12345
+    volumes:
+      # Persist database data to a named volume. Data survives container recreation.
+      - mysql_data:/var/lib/mysql
+
+      # Mounts schema so that the MySQL Image automatically executes when the container starts.
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      # The ':ro' for read-only to prevent accidental modifications
+    networks:
+      - codebook-network
+
+# Define Docker volumes for persistent data
+volumes:
+  mysql_data: # To store MySQL data.
+
+# Define a custom network for inter-container communication
+networks:
+  codebook-network:
+    driver: bridge # Default driver, suitable for local development
