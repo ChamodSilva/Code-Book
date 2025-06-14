@@ -38,7 +38,26 @@ services:
       - mysql
     networks:
       - codebook-network
-    command: sh -c "/wait-for mysql:3306 -- npm start"
+    command: sh -c "/app/wait-for mysql:3306 -- npm start"
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: codebook_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_BASE_URL: http://backend:${BACKEND_PORT}
+    depends_on:
+      - backend
+    networks:
+      - codebook-network
+
 volumes:
   mysql_data:
 
