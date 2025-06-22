@@ -2,12 +2,14 @@
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const cors = require('cors');
 
 // Import project files
 const dotenv = require('dotenv');
 const pool = require('./src/config/db');
 const userRoutes = require('./src/routes/userRoutes');
 const postRoutes = require('./src/routes/postRoutes');
+const authRoutes = require('./src/routes/authRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -17,6 +19,12 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+// Allow requests from your frontend
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true // if you use cookies or authentication headers
+}));
 
 // --- Swagger Definition ---
 const swaggerOptions =
@@ -122,6 +130,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // --- Main API Routes ---
 app.use('/api/users', userRoutes); // All user-related routes start with /api/users
 app.use('/api/posts', postRoutes); // All post-related routes start with /api/posts
+app.use('/api/auth', authRoutes); // All authentication-related routes start with /api/auth
 
 // Basic Route for testing the server
 app.get('/', (req, res) =>
