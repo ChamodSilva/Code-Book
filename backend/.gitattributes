@@ -1,0 +1,2 @@
+*.sh text eol=lf
+wait-for text eol=lf
