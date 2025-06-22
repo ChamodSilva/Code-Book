@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Paper, Alert, MenuItem } from '@mui/material';
 
 const languages =
@@ -20,6 +21,14 @@ const CreatePost = () => {
   const [language, setLanguage] = useState('');
   const [description, setDescription] = useState('');
   const [notification, setNotification] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,10 +42,14 @@ const CreatePost = () => {
 
     try {
       // Replace with your backend API endpoint
+      const token = localStorage.getItem('token');
       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
       const response = await fetch(`${apiBaseUrl}/api/posts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({ title, code_snippet: codeSnippet, language, description }),
         credentials: 'include',
       });

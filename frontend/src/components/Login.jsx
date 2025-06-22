@@ -32,6 +32,10 @@ const Login = () => {
 
       if (response.ok) {
         setNotification({message: 'Login successful!', severity: 'success'});
+        // Store JWT token
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
         setTimeout(() => navigate('/feed'), 1000); // Redirect to feed after 1 second
       } else {
         setNotification({message: data.message || 'Invalid credentials', severity: 'error'});

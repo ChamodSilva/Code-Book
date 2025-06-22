@@ -1,4 +1,7 @@
 const pool = require('../config/db');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
@@ -9,7 +12,6 @@ exports.login = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        // Try to find user by email or username
         const [rows] = await connection.execute(
             'SELECT * FROM users WHERE email = ? OR username = ?',
             [email, email]
@@ -22,9 +24,21 @@ exports.login = async (req, res) => {
         if (user.password_hash !== password) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
-        // Optionally, generate a token here
-        res.json({ message: 'Login successful', user: { id: user.id, username: user.username, email: user.email } });
+
+        // Generate JWT
+        const token = jwt.sign(
+            { id: user.id, username: user.username, email: user.email },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.json({
+            message: 'Login successful',
+            token,
+            user: { id: user.id, username: user.username, email: user.email }
+        });
     } catch (err) {
+        console.error('Login error:', err); // Add this line
         res.status(500).json({ message: 'Error during login', error: err.message });
     } finally {
         if (connection) connection.release();
