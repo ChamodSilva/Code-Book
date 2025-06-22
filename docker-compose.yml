@@ -52,7 +52,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      VITE_API_BASE_URL: http://backend:${BACKEND_PORT}
+      VITE_API_BASE_URL: http://localhost:${BACKEND_PORT}
     depends_on:
       - backend
     networks:

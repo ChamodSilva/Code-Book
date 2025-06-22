@@ -19,20 +19,26 @@ const Login = () => {
     setNotification(null);
 
     try {
-      console.log('Attempting login with:', { email, password });
+      // Use VITE_API_BASE_URL from environment variables
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include', // if your backend uses cookies for auth
+      });
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const data = await response.json();
 
-      if (email === 'test@example.com' && password === 'password123') {
-        console.log('Login successful!');
-        setNotification({message: 'Login successful!', severity: 'success' });
+      if (response.ok) {
+        setNotification({message: 'Login successful!', severity: 'success'});
+        // Optionally store token: localStorage.setItem('token', data.token);
+        // Optionally redirect: navigate('/dashboard');
       } else {
-        throw new Error('Invalid credentials');
+        setNotification({message: data.message || 'Invalid credentials', severity: 'error'});
       }
-
     } catch (err) {
-      console.error('Login error:', err.message);
-      setNotification({message: err.message || 'An unexpected error occurred during login.', severity: 'error'});
+      setNotification({message: 'An unexpected error occurred during login.', severity: 'error'});
     }
   };
 

@@ -27,11 +27,23 @@ const CreateAccount = () => {
     setNotification(null);
 
     try {
-      console.log('Creating account with:', { username, email, password });
+      // Use VITE_API_BASE_URL from environment variables
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiBaseUrl}/api/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
+      });
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const data = await response.json();
 
-      setNotification({ message: 'Account created successfully!', severity: 'success' });
+      if (response.ok) {
+        setNotification({ message: 'Account created successfully!', severity: 'success' });
+        // Optionally redirect to login after a delay
+        setTimeout(() => navigate('/login'), 1500);
+      } else {
+        setNotification({ message: data.message || 'Account creation failed.', severity: 'error' });
+      }
     } catch (err) {
       setNotification({message: 'An error occurred during account creation.', severity: 'error'});
     }
