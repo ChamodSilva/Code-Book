@@ -27,7 +27,6 @@ services:
       - "${BACKEND_PORT}:5000"
     volumes:
       - ./backend:/app
-      - /app/node_modules
     environment:
       DATABASE_HOST: mysql
       DATABASE_USER: ${MYSQL_USER}

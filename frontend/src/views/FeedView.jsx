@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Paper } from '@mui/material';
+import Post from '../components/Post.jsx';
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
@@ -9,7 +10,7 @@ const Feed = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login');
+      navigate('/login', { replace: true });
       return;
     }
 
@@ -22,13 +23,13 @@ const Feed = () => {
     })
       .then(res => {
         if (res.status === 401) {
-          navigate('/login');
+          navigate('/login', { replace: true });
           return null;
         }
         return res.json();
       })
       .then(data => {
-        if (data) setPosts(data); // <-- Use data directly, not data.posts
+        if (data) setPosts(data);
       })
       .catch(() => {
         // Optionally handle fetch errors
@@ -65,19 +66,7 @@ const Feed = () => {
         </Typography>
         {/* Example: Render posts */}
         {posts.map((post) => (
-          <Paper key={post.postID} sx={{ my: 2, p: 2, width: '100%' }}>
-            <Typography variant="h6">{post.title}</Typography>
-            <Typography variant="subtitle2" color="text.secondary">
-              by {post.username} ({post.email})
-            </Typography>
-            <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace', my: 1 }}>
-              {post.code_snippet}
-            </Typography>
-            <Typography variant="body2">{post.description}</Typography>
-            <Typography variant="caption" color="text.secondary">
-              Language: {post.language} | Posted: {new Date(post.created_at).toLocaleString()}
-            </Typography>
-          </Paper>
+          <Post key={post.postID} post={post} />
         ))}
       </Paper>
     </Box>
