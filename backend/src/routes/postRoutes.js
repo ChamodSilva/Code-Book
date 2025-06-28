@@ -1,5 +1,6 @@
 const express = require('express');
 const postController = require('../controllers/postController');
+const authenticateToken = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -139,7 +140,7 @@ router.get('/:id', postController.getPostById);
  *       500:
  *         description: Internal server error.
  */
-router.post('/', postController.createPost);
+router.post('/', authenticateToken, postController.createPost);
 
 /**
  * @swagger

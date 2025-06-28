@@ -132,44 +132,26 @@ exports.getPostById = async (req, res) =>
 // Create a new post
 exports.createPost = async (req, res) =>
 {
+    const { title, code_snippet, language, description } = req.body;
+    const user_id = req.user.id; // Get from JWT
+
+    if (!title || !code_snippet)
+    {
+        return res.status(400).json({ message: 'Title and code snippet are required.' });
+    }
+
     let connection;
     try
     {
-        const { user_id, title, code_snippet, language, description, github_repo_url } = req.body;
-
-        if (!user_id || !title || !code_snippet)
-        {
-            return res.status(400).json({ message: 'user_id, title, and code_snippet are required.' });
-        }
-
         connection = await pool.getConnection();
-        const [userCheck] = await connection.execute('SELECT id FROM users WHERE id = ?', [user_id]);
-        if (userCheck.length === 0)
-        {
-            return res.status(404).json({ message: 'Author (user_id) not found.' });
-        }
-
-        const [result] = await connection.execute
-        (
-            'INSERT INTO posts (user_id, title, code_snippet, language, description, github_repo_url) VALUES (?, ?, ?, ?, ?, ?)',
-            [user_id, title, code_snippet, language, description, github_repo_url]
+        await connection.execute(
+            `INSERT INTO posts (user_id, title, code_snippet, language, description) VALUES (?, ?, ?, ?, ?)`,
+            [user_id, title, code_snippet, language, description]
         );
-
-        res.status(201).json
-        ({
-            message: 'Post created successfully',
-            postID: result.insertId,
-            post: { user_id, title, code_snippet, language, description, github_repo_url }
-        });
-
+        res.status(201).json({ message: 'Post created successfully.' });
     }
     catch (err)
     {
-        console.error('Error creating post:', err);
-        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.code === 'ER_NO_REFERENCED_ROW')
-        {
-            return res.status(400).json({ message: 'Invalid user_id provided. User does not exist.', error: err.message });
-        }
         res.status(500).json({ message: 'Error creating post', error: err.message });
     }
     finally

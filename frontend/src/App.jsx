@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './App.css';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import Login from './components/Login.jsx';
+import CreateAccount from './components/CreateAccount.jsx';
+import CreatePost from './components/CreatePost.jsx';
+import FeedView from './views/FeedView.jsx';
+import NavBar from './components/NavBar.jsx';
+import { Dialog, Box } from '@mui/material';
 
-function App() {
-  const [count, setCount] = useState(0)
+function ModalRoutes() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isLogin = location.pathname === '/login';
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <NavBar />
+      <Box sx={{ pt: 8 }}>
+        <Routes>
+          <Route path="/create-account" element={<CreateAccount />} />
+          <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/feed" element={<FeedView />} />
+          <Route path="*" element={<FeedView />} />
+        </Routes>
+        <Dialog
+          open={isLogin}
+          onClose={() => navigate('/feed')}
+          PaperProps={{
+            sx: { borderRadius: 4, minWidth: 400, maxWidth: 600 }
+          }}
+          hideBackdrop={false}
+        >
+          <Login />
+        </Dialog>
+      </Box>
     </>
-  )
+  );
 }
 
-export default App
+function App() {
+  return (
+    <Router>
+      <ModalRoutes />
+    </Router>
+  );
+}
+
+export default App;
