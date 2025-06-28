@@ -32,7 +32,9 @@ const Login = () => {
 
       if (response.ok) {
         setNotification({message: 'Login successful!', severity: 'success'});
-        setTimeout(() => navigate('/feed'), 1000); // Redirect to feed after 1 second
+        // Store user info in localStorage
+        localStorage.setItem('user', JSON.stringify(data.user));
+        setTimeout(() => navigate('/feed'), 1000);
       } else {
         setNotification({message: data.message || 'Invalid credentials', severity: 'error'});
       }

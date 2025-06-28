@@ -1,61 +1,77 @@
 import { useState } from 'react';
 import { Box, TextField, Button, Typography, Paper, Alert, MenuItem } from '@mui/material';
 
-const languages =
-[
-  'JavaScript',
-  'Python',
-  'Java',
-  'C++',
-  'C#',
-  'Go',
-  'Ruby',
-  'TypeScript',
-  'Other'
-];
+const languages = 
+ [
+   'JavaScript',
+   'Python',
+   'Java',
+   'C++',
+   'C#',
+   'Go',
+   'Ruby',
+   'TypeScript',
+   'Other'
+ ];
 
-const CreatePost = () => {
-  const [title, setTitle] = useState('');
-  const [codeSnippet, setCodeSnippet] = useState('');
-  const [language, setLanguage] = useState('');
-  const [description, setDescription] = useState('');
-  const [notification, setNotification] = useState(null);
+ const CreatePost = () => {
+   const [title, setTitle] = useState('');
+   const [codeSnippet, setCodeSnippet] = useState('');
+   const [language, setLanguage] = useState('');
+   const [description, setDescription] = useState('');
+   const [notification, setNotification] = useState(null);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+   const handleSubmit = async (event) => {
+     event.preventDefault();
 
-    if (!title || !codeSnippet) {
-      setNotification({ message: 'Title and code snippet are required.', severity: 'error' });
-      return;
-    }
+     if (!title || !codeSnippet) {
+       setNotification({ message: 'Title and code snippet are required.', severity: 'error' });
+       return;
+     }
 
-    setNotification(null);
+     setNotification(null);
 
-    try {
-      // Replace with your backend API endpoint
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-      const response = await fetch(`${apiBaseUrl}/api/posts`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, code_snippet: codeSnippet, language, description }),
-        credentials: 'include',
-      });
+     // Get user from localStorage
+     const user = JSON.parse(localStorage.getItem('user'));
+     if (!user || !user.id) {
+       setNotification({ message: 'You must be logged in to create a post.', severity: 'error' });
+       return;
+     }
 
-      const data = await response.json();
+     // Ensure no undefined values are sent
+     const postBody = {
+       user_id: user.id,
+       title,
+       code_snippet: codeSnippet,
+       language: language === '' ? null : language,
+       description: description === '' ? null : description,
+       github_repo_url: null, // Always send this, even if null
+     };
 
-      if (response.ok) {
-        setNotification({ message: 'Post created successfully!', severity: 'success' });
-        setTitle('');
-        setCodeSnippet('');
-        setLanguage('');
-        setDescription('');
-      } else {
-        setNotification({ message: data.message || 'Failed to create post.', severity: 'error' });
-      }
-    } catch (err) {
-      setNotification({ message: 'An unexpected error occurred.', severity: 'error' });
-    }
-  };
+     try {
+       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+       const response = await fetch(`${apiBaseUrl}/api/posts`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(postBody),
+         credentials: 'include',
+       });
+
+       const data = await response.json();
+
+       if (response.ok) {
+         setNotification({ message: 'Post created successfully!', severity: 'success' });
+         setTitle('');
+         setCodeSnippet('');
+         setLanguage('');
+         setDescription('');
+       } else {
+         setNotification({ message: data.message || 'Failed to create post.', severity: 'error' });
+       }
+     } catch (err) {
+       setNotification({ message: 'An unexpected error occurred.', severity: 'error' });
+     }
+   };
 
   return (
     <Box
