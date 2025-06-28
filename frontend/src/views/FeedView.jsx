@@ -20,9 +20,9 @@ const FeedView = () => (
     {/* Left Panel */}
     <Box
       sx={{
-        width: { xs: '0%', md: '10%' }, // reduced from 15% to 10%
-        minWidth: 80,
-        maxWidth: 250,
+        width: { xs: '0%', md: '18%' },
+        minWidth: 140,
+        maxWidth: 320,
         height: '100%',
         display: { xs: 'none', md: 'flex' },
         alignItems: 'stretch',
@@ -35,7 +35,7 @@ const FeedView = () => (
     {/* Main Panel */}
     <Box
       sx={{
-        width: { xs: '100%', md: '80%' }, // increased from 70% to 80%
+        width: { xs: '100%', md: '64%' },
         minWidth: 0,
         display: 'flex',
         flexDirection: 'column',
@@ -50,9 +50,9 @@ const FeedView = () => (
     {/* Right Panel */}
     <Box
       sx={{
-        width: { xs: '0%', md: '10%' }, // reduced from 15% to 10%
-        minWidth: 80,
-        maxWidth: 250,
+        width: { xs: '0%', md: '18%' },
+        minWidth: 140,
+        maxWidth: 320,
         height: '100%',
         display: { xs: 'none', md: 'flex' },
         alignItems: 'stretch',
