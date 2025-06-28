@@ -46,16 +46,7 @@ const Login = () => {
   };
 
   return (
-    // Main container to center the form and apply background
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-      }}
-    >
-      {/* Login Card Paper Component */}
+    <Box>
       <Paper
         elevation={6}
         sx={{
@@ -64,7 +55,6 @@ const Login = () => {
           flexDirection: 'column',
           alignItems: 'center',
           width: '100%',
-          height: '100%',
           maxWidth: 400,
           margin: 'auto',
         }}
