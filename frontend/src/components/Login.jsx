@@ -35,6 +35,7 @@ const Login = () => {
         // Store JWT token
         if (data.token) {
           localStorage.setItem('token', data.token);
+          if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
         }
         setTimeout(() => navigate('/feed'), 1000); // Redirect to feed after 1 second
       } else {

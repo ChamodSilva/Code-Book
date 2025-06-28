@@ -26,7 +26,7 @@ function ModalRoutes() {
           open={isLogin}
           onClose={() => navigate('/feed')}
           PaperProps={{
-            sx: { borderRadius: 4, minWidth: 400, maxWidth: 420 }
+            sx: { borderRadius: 4, minWidth: 400, maxWidth: 600 }
           }}
           hideBackdrop={false}
         >

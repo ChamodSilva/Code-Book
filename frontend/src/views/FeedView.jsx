@@ -1,76 +1,67 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Paper } from '@mui/material';
-import Post from '../components/Post.jsx';
+import { Box } from '@mui/material';
+import Quicklinks from '../components/Quicklinks.jsx';
+import Social from '../components/Social.jsx';
+import Feed from '../components/Feed.jsx';
 
-const Feed = () => {
-  const [posts, setPosts] = useState([]);
-  const navigate = useNavigate();
+const NAVBAR_HEIGHT = 0; // px
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login', { replace: true });
-      return;
-    }
-
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-    fetch(`${apiBaseUrl}/api/posts`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (res.status === 401) {
-          navigate('/login', { replace: true });
-          return null;
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (data) setPosts(data);
-      })
-      .catch(() => {
-        // Optionally handle fetch errors
-      });
-  }, [navigate]);
-
-  return (
+const FeedView = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'row',
+      height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+      bgcolor: 'background.default',
+      overflow: 'hidden',
+      mt: `${NAVBAR_HEIGHT}px`,
+      gap: '10px'
+    }}
+  >
+    {/* Left Panel */}
     <Box
       sx={{
-        display: 'flex',
+        width: { xs: '0%', md: '10%' }, // reduced from 15% to 10%
+        minWidth: 80,
+        maxWidth: 250,
+        height: '100%',
+        display: { xs: 'none', md: 'flex' },
+        alignItems: 'stretch',
         justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
       }}
     >
-      <Paper
-        elevation={6}
-        sx={{
-          padding: 5,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          width: '100%',
-          height: '100%',
-          maxWidth: 600,
-          margin: 'auto',
-        }}
-      >
-        <Typography component="h1" variant="h3" sx={{ mb: 1 }}>
-          Feed
-        </Typography>
-        <Typography>
-          Welcome to your feed! (You can add posts here.)
-        </Typography>
-        {/* Example: Render posts */}
-        {posts.map((post) => (
-          <Post key={post.postID} post={post} />
-        ))}
-      </Paper>
+      <Quicklinks />
     </Box>
-  );
-};
 
-export default Feed;
+    {/* Main Panel */}
+    <Box
+      sx={{
+        width: { xs: '100%', md: '80%' }, // increased from 70% to 80%
+        minWidth: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '100%',
+        overflowY: 'auto',
+      }}
+    >
+      <Feed />
+    </Box>
+
+    {/* Right Panel */}
+    <Box
+      sx={{
+        width: { xs: '0%', md: '10%' }, // reduced from 15% to 10%
+        minWidth: 80,
+        maxWidth: 250,
+        height: '100%',
+        display: { xs: 'none', md: 'flex' },
+        alignItems: 'stretch',
+        justifyContent: 'center',
+      }}
+    >
+      <Social />
+    </Box>
+  </Box>
+);
+
+export default FeedView;

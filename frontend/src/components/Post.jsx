@@ -1,4 +1,5 @@
-import { Card, CardContent, Typography, Box, Chip, Avatar, Stack } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, Stack } from '@mui/material';
+import UserAvatar from './UserAvatar.jsx';
 
 const languageColors = {
   JavaScript: '#f7df1e',
@@ -16,15 +17,10 @@ const Post = ({ post }) => (
   <Card sx={{ mb: 3, width: '100%', bgcolor: 'background.paper', boxShadow: 4 }}>
     <CardContent>
       <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 1 }}>
-        <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36 }}>
-          {post.username ? post.username[0].toUpperCase() : '?'}
-        </Avatar>
-        <Box>
+        <UserAvatar user={{ id: post.userId, username: post.username }} size={36} />
+        <Box sx={{ flex: 1 }}>
           <Typography variant="h6" component="div">
             {post.title}
-          </Typography>
-          <Typography variant="subtitle2" color="text.secondary">
-            {post.username} &bull; {post.email}
           </Typography>
         </Box>
         {post.language && (
@@ -40,16 +36,26 @@ const Post = ({ post }) => (
           />
         )}
       </Stack>
+      {/* Username left-aligned under the avatar/title row */}
+      <Box sx={{ mb: 1 }}>
+        <Typography variant="subtitle2" color="text.secondary" sx={{ textAlign: 'left' }}>
+          {post.username}
+        </Typography>
+      </Box>
+      {/* Code section with border, left-aligned */}
       <Box
         sx={{
           backgroundColor: '#23272f',
           borderRadius: 2,
+          border: '1.5px solid #444',
           p: 2,
           fontFamily: 'monospace',
           fontSize: '1rem',
           whiteSpace: 'pre-wrap',
           mb: 2,
           color: '#e0e0e0',
+          textAlign: 'left',
+          width: '100%',
         }}
       >
         {post.code_snippet}
@@ -59,9 +65,11 @@ const Post = ({ post }) => (
           {post.description}
         </Typography>
       )}
-      <Typography variant="caption" color="text.secondary">
-        Posted: {post.created_at ? new Date(post.created_at).toLocaleString() : ''}
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+        <Typography variant="caption" color="text.secondary">
+          Posted: {post.created_at ? new Date(post.created_at).toLocaleString() : ''}
+        </Typography>
+      </Box>
     </CardContent>
   </Card>
 );
