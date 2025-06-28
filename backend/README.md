@@ -8,6 +8,7 @@ This is the backend service for the Code-Book project. It is built with Node.js 
 - CRUD operations for posts
 - User profile management
 - Docker support for easy deployment
+- **Automated testing with Jest and Supertest**
 
 ## Project Structure
 ```
@@ -28,6 +29,10 @@ backend/
 │       ├── authRoutes.js
 │       ├── postRoutes.js
 │       └── userRoutes.js
+├── tests/
+│   ├── authController.test.js
+│   ├── postController.test.js
+│   └── userController.test.js
 ```
 
 ## Getting Started
@@ -54,6 +59,13 @@ backend/
   npm start
   ```
 - The server will run on `http://localhost:5000` by default.
+
+### Running Tests
+- To run all backend tests:
+  ```sh
+  npm test
+  ```
+- Tests are located in the `tests/` directory and use [Jest](https://jestjs.io/) and [Supertest](https://github.com/ladjs/supertest) for HTTP assertions.
 
 ### Using Docker
 - Build and run the backend service with Docker:
